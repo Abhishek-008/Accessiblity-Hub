@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <style>
+        /* General Reset */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background: #010118;
+            color: #f8f8f2;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            text-align: center;
+            position: relative;
+        }
+
+        /* Background Network Mesh */
+        #background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Heading and Subheading */
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            animation: fadeInDown 1.5s ease-in-out;
+            z-index: 1;
+        }
+
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            color: #8be9fd;
+            animation: fadeInUp 1.5s ease-in-out;
+            z-index: 1;
+        }
+
+        /* Card Container */
+        .card-container {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 1000px;
+            z-index: 1;
+        }
+
+        /* Cards */
+        .card {
+            background: rgba(68, 71, 90, 0.8);
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            width: 200px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: slideIn 1.5s ease-in-out;
+        }
+
+        .card:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.7);
+        }
+
+        /* Card Titles */
+        .card h3 {
+            margin: 0;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            font-size: 0.9rem;
+            color: #b1b1b1;
+        }
+
+        /* Animations */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="background"></div>
+
+    <h1>Welcome to Accessibility Hub</h1>
+    <p>Select a tool to get started:</p>
+
+    <div class="card-container">
+        <!-- Card 1 -->
+        <div class="card" onclick="navigateTo('texttospeech/')">
+            <h3>Text to Speech</h3>
+            <p>Convert written text into spoken words.</p>
+        </div>
+        <!-- Card 2 -->
+        <div class="card" onclick="navigateTo('speech-to-text/')">
+            <h3>Speech to Text</h3>
+            <p>Transcribe your speech into text in real-time.</p>
+        </div>
+        <!-- Card 3 -->
+        <div class="card" onclick="navigateTo('gesture/')">
+            <h3>Gesture Recognition</h3>
+            <p>Control your system using gestures.</p>
+        </div>
+        <!-- Card 4 -->
+        <div class="card" onclick="navigateTo('braille-translation.html')">
+            <h3>Braille Translation</h3>
+            <p>Translate text into Braille for accessibility.</p>
+        </div>
+        <!-- Card 5 -->
+        <div class="card" onclick="navigateTo('detect/')">
+            <h3>Object Recognition</h3>
+            <p>Identify and recognize objects in your environment.</p>
+        </div>
+    </div>
+
+    <script>
+
+        function navigateTo(url) {
+            window.location.href = url;  // This changes the current location to the provided URL
+        }
+        // Moving Background with Canvas
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        document.getElementById('background').appendChild(canvas);
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const stars = [];
+        const numStars = 100;
+
+        // Create stars
+        for (let i = 0; i < numStars; i++) {
+            stars.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                radius: Math.random() * 2,
+                dx: Math.random() * 1.5 - 1,
+                dy: Math.random() * 1.5 - 1,
+            });
+        }
+
+        function drawStars() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            stars.forEach((star) => {
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+                ctx.fill();
+
+                star.x += star.dx;
+                star.y += star.dy;
+
+                // Wrap around edges
+                if (star.x < 0) star.x = canvas.width;
+                if (star.x > canvas.width) star.x = 0;
+                if (star.y < 0) star.y = canvas.height;
+                if (star.y > canvas.height) star.y = 0;
+            });
+
+            requestAnimationFrame(drawStars);
+        }
+
+        drawStars();
+    </script>
+</body>
+</html>

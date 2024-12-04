@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gesture Recognition</title>
+    <style>
+        /* General Reset */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to bottom right, #0d0d15, #16213e);
+            color: #f8f8f2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Navigation Bar */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: linear-gradient(90deg, #000304, #010203);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+            z-index: 100;
+            padding: 10px 0;
+            transition: background 0.3s ease-in-out;
+        }
+
+        nav ul {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            list-style-type: none;
+        }
+
+        nav ul li {
+            margin: 0 15px;
+            position: relative;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 10;
+            padding: 8px 20px;
+            border-radius: 8px;
+            transition: all 0.4s ease-in-out;
+            position: relative;
+        }
+
+        nav ul li a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #fff;
+            transform: scaleX(0);
+            transform-origin: bottom right;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        nav ul li a:hover::before {
+            transform: scaleX(1);
+            transform-origin: bottom left;
+        }
+
+        nav ul li a:hover {
+            background: #3c3b3a;
+            color: #fff;
+        }
+
+        nav ul li a:hover::after {
+            content: ' →';
+            position: absolute;
+            right: -25px;
+            top: 0;
+            color: #d8d8d7;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        /* Heading Styling */
+        h1 {
+            font-size: 2.5rem;
+            margin-top: 100px;
+            margin-bottom: 20px;
+            animation: fadeInDown 1.5s ease-in-out;
+        }
+
+        /* Button Styling */
+        button {
+            padding: 15px 30px;
+            background: #50fa7b;
+            color: #282a36;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px;
+            transition: transform 0.3s ease, background 0.3s ease;
+        }
+
+        button:hover {
+            background: #45e06d;
+            transform: scale(1.1);
+        }
+
+        button:active {
+            background: #3bc85f;
+        }
+
+        /* Video Stream Styling */
+        img {
+            border: 5px solid #44475a;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            width: 640px;
+            height: 480px;
+            margin-top: 20px;
+            opacity: 0; /* Initially hidden */
+            transform: scale(0.9); /* Initial scale for animation */
+            animation: none; /* No animation by default */
+        }
+
+        /* Gesture Result Styling */
+        p {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            color: #8be9fd;
+            background: #44475a;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+            max-width: 400px;
+            word-wrap: break-word;
+        }
+
+        /* Animations */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes zoomIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            button {
+                font-size: 1rem;
+                padding: 10px 20px;
+            }
+
+            img {
+                width: 100%;
+                height: auto;
+            }
+
+            p {
+                font-size: 1rem;
+                padding: 10px;
+            }
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="http://127.0.0.1:8000/">Home</a></li>
+            <li><a href="http://127.0.0.1:8000/speech-to-text/">Speech to Text</a></li>
+            <li><a href="http://127.0.0.1:8000/gesture/">Gesture Recognition</a></li>
+            <li><a href="braille-translation.html">Braille Translation</a></li>
+            <li><a href="http://127.0.0.1:8000/detect/">Object Recognition</a></li>
+        </ul>
+    </nav>
+
+    <h1>Gesture Recognition</h1>
+
+    <div>
+        <button id="start-btn">Start Detection</button>
+        <button id="stop-btn">Stop Detection</button>
+    </div>
+
+    <div>
+        <img id="video-stream" src="" alt="Video Stream">
+        <p id="gesture-result">Gesture Result: No gesture detected</p>
+    </div>
+
+    <script>
+        // Function to start gesture detection
+        function startGestureDetection() {
+            $.ajax({
+                url: '{% url "start_gesture_detection" %}',
+                method: 'GET',
+                success: function(response) {
+                    console.log(response.status);
+                    $('#gesture-result').text(response.status);
+                    const videoStream = $('#video-stream');
+                    videoStream.attr('src', '/video_feed/'); // Start the video stream
+
+                    // Add animation when camera starts
+                    videoStream.css({
+                        opacity: '0',
+                        animation: 'zoomIn 1s forwards',
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error starting gesture detection: ", error);
+                }
+            });
+        }
+
+        // Function to stop gesture detection
+        function stopGestureDetection() {
+            $.ajax({
+                url: '{% url "stop_gesture_detection" %}',
+                method: 'GET',
+                success: function(response) {
+                    console.log(response.status);
+                    $('#gesture-result').text(response.status);
+                    $('#video-stream').attr('src', ''); // Stop the video stream
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error stopping gesture detection: ", error);
+                }
+            });
+        }
+
+        // Event listeners for buttons
+        $(document).ready(function() {
+            $('#start-btn').click(function() {
+                startGestureDetection();
+            });
+
+            $('#stop-btn').click(function() {
+                stopGestureDetection();
+            });
+        });
+    </script>
+</body>
+</html>

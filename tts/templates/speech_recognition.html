@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speech to Text</title>
+    <style>
+        /* General Reset */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to bottom right, #0d0d15, #16213e);
+            color: #f8f8f2;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        /* Navigation Bar */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: linear-gradient(90deg, #000304, #010203);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+            z-index: 100;
+            padding: 10px 0;
+            transition: background 0.3s ease-in-out;
+        }
+
+        nav ul {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            list-style-type: none;
+        }
+
+        nav ul li {
+            margin: 0 15px;
+            position: relative;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 10;
+            padding: 8px 20px;
+            border-radius: 8px;
+            transition: all 0.4s ease-in-out;
+            position: relative;
+        }
+
+        nav ul li a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #fff;
+            transform: scaleX(0);
+            transform-origin: bottom right;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        nav ul li a:hover::before {
+            transform: scaleX(1);
+            transform-origin: bottom left;
+        }
+
+        nav ul li a:hover {
+            background: #3c3b3a;
+            color: #fff;
+        }
+
+        nav ul li a:hover::after {
+            content: ' →';
+            position: absolute;
+            right: -25px;
+            top: 0;
+            color: #d8d8d7;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        /* Page Heading and Content */
+        h1 {
+            font-size: 2.2rem;
+            margin-top: 80px; /* Adjust for the navbar */
+            animation: slideInDown 1.2s ease-out;
+            font-weight: 300;
+        }
+
+        h2 {
+            font-size: 1.1rem;
+            font-weight: 300;
+            margin: 10px 0 20px;
+            color: #b1b1b1;
+            animation: slideInUp 1.2s ease-out;
+        }
+
+        p {
+            font-size: 0.9rem;
+            color: #9f9f9f;
+            margin-bottom: 20px;
+        }
+
+        /* Button Styling */
+        button {
+            padding: 15px 30px;
+            background: #50fa7b;
+            color: #282a36;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s ease, background 0.3s ease;
+            animation: fadeInUp 1.5s ease-in-out;
+        }
+        button:hover {
+            background: #28ad4e;
+            transform: scale(1.1);
+        }
+
+        button:active {
+            background: #020704;
+        }
+
+
+       
+        
+       
+        /* Text Styling */
+        p {
+            margin-top: 20px;
+            font-size: 1.1rem;
+            color: #8be9fd;
+            background: #44475a;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+            max-width: 400px;
+            word-wrap: break-word;
+            animation: fadeInUp 1.5s ease-in-out;
+        }
+
+       /* Animations */
+       @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            button {
+                font-size: 1rem;
+                padding: 10px 20px;
+            }
+
+            p {
+                font-size: 1rem;
+                padding: 10px;
+            }
+
+            nav ul {
+                flex-direction: column;
+            }
+
+            nav ul li {
+                margin: 10px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav>
+        <ul>
+            <li><a href="http://127.0.0.1:8000/">Home</a></li>
+            <li><a href="http://127.0.0.1:8000/speech-to-text/">Speech to Text</a></li>
+            <li><a href="http://127.0.0.1:8000/gesture/">Gesture Recognition</a></li>
+            <li><a href="braille-translation.html">Braille Translation</a></li>
+            <li><a href="http://127.0.0.1:8000/detect/">Object Recognition</a></li>
+        </ul>
+    </nav>
+
+    <h1>Speech to Text Recognition</h1>
+
+    <button id="start-recognition">Start Listening</button>
+    <p id="transcribed-text">Your speech will appear here...</p>
+
+    <script>
+        // Check if the browser supports the Web Speech API
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (SpeechRecognition) {
+            const recognition = new SpeechRecognition();
+
+            // Set recognition parameters
+            recognition.continuous = false;  // Recognize a single phrase
+            recognition.interimResults = false;  // Don't show interim results
+            recognition.lang = 'en-US';  // Language for speech recognition
+
+            // Handle result event
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                document.getElementById('transcribed-text').innerText = transcript;
+            };
+
+            // Handle errors
+            recognition.onerror = function(event) {
+                document.getElementById('transcribed-text').innerText = 'Error occurred in recognition: ' + event.error;
+            };
+
+            // Start recognition on button click
+            document.getElementById('start-recognition').addEventListener('click', function() {
+                recognition.start();
+                document.getElementById('transcribed-text').innerText = 'Listening...';
+            });
+        } else {
+            document.getElementById('transcribed-text').innerText = 'Web Speech API is not supported in this browser.';
+        }
+    </script>
+</body>
+</html>
