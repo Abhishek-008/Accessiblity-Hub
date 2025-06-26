@@ -1,4 +1,4 @@
-# blitz2
+# Accessbility Hub
 Assistive Technology Tool for Inclusive Communication
 
 Overview
